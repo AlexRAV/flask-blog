@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block css %}
+<link rel="stylesheet" href="https://www.tinymce.com/css/codepen.min.css">
+{% endblock %}
+{% block content %}
+<div class="detail_article">
+    <div class="row">
+        <div class="col-lg-offset-2 col-lg-8">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>{{ article.title }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mce-content-body">{{ article.body|safe }}</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h5>Author: <span class="text-muted">{{ article.profile.user.username }}</span></h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form id="newArticle" method="post" class=""
+                          action="{{ url_for('articles.add_comment', article_id=article.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    {{ form.body(placeholder="Comment text", class_="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-default btn-sm">Add comment</button>
+                    </form>
+                </div>
+            </div>
+            <table id="comments" class="col-lg-12 table">
+                {% for comment in comments %}
+                <tr>
+                    <td>
+                        <div class="row">
+                            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                <h4>{{ comment.profile.user.username }}</h4>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right comment__date-publish">
+                                <small>{{momentjs(comment.created_at).format('HH:mm DD.MM.YYYY')}}</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p class="col-lg-12">
+                                {{ comment.body }}
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
