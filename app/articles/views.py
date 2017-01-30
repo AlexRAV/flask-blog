@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, render_template, session, request, flash, redirect, url_for
+from flask import Blueprint, render_template, session, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from .models import Article
 from app.user.models import User
@@ -66,34 +66,13 @@ def add_comment(article_id):
     if form.validate_on_submit():
         article = Article.query.filter(Article.id == article_id).first()
         comment = Comment.create(body=form.body.data, author=current_user.profile.id, article=article.id)
-        flash('Your comment was added.', 'success')
-        return redirect(url_for('articles.detail_article', article_id=article_id))
+        dict = {
+            'body': comment.body,
+            'author': comment.profile.user.username,
+            'created_at': comment.created_at
+        }
+        return jsonify(dict)
     else:
         flash_errors(form)
     return redirect(url_for('articles.detail_article', article_id=article_id))
 
-
-# @blueprint.route('/edit/<article_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_article(article_id):
-#     article = Article.query.filter(Article.id == article_id).first()
-#     if article.author != current_user.profile.id:
-#         return render_template('404.html')
-#     form = NewArticleForm(request.form, csrf_enabled=True, title=article.title, body=article.body)
-#     if form.validate_on_submit():
-#         article = article.update(title=form.title.data, body=form.body.data)
-#         flash('Article was be editing.', 'success')
-#         return redirect(url_for('user.members', user_id=current_user.id))
-#     else:
-#         flash_errors(form)
-#     return render_template('articles/new_article.html', form=form, user=current_user, article=article)
-#
-#
-# @blueprint.route('/delete/<article_id>')
-# @login_required
-# def delete_article(article_id):
-#     article = Article.query.filter(Article.id == article_id).first()
-#     if article.author != current_user.profile.id:
-#         return render_template('404.html')
-#     article.delete()
-#     return redirect(url_for('user.members', user_id=current_user.id))

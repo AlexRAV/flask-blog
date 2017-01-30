@@ -23,7 +23,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <form id="newArticle" method="post" class=""
+                    <form id="newComment" method="post" class=""
                           action="{{ url_for('articles.add_comment', article_id=article.id) }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="form-group">
@@ -39,18 +39,18 @@
             </div>
             <table id="comments" class="col-lg-12 table">
                 {% for comment in comments %}
-                <tr>
+                <tr class="comment">
                     <td>
                         <div class="row">
                             <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                                <h4>{{ comment.profile.user.username }}</h4>
+                                <h4 class="comment__author">{{ comment.profile.user.username }}</h4>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right comment__date-publish">
-                                <small>{{momentjs(comment.created_at).format('HH:mm DD.MM.YYYY')}}</small>
+                                <small class="comment__date-publish-text">{{momentjs(comment.created_at).format('HH:mm DD.MM.YYYY')}}</small>
                             </div>
                         </div>
                         <div class="row">
-                            <p class="col-lg-12">
+                            <p class="col-lg-12 comment__body">
                                 {{ comment.body }}
                             </p>
                         </div>

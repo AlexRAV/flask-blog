@@ -14,6 +14,7 @@ js = Bundle(
     'libs/bootstrap/dist/js/bootstrap.js',
     'libs/momentjs/moment.js',
     'js/plugins.js',
+    'js/script.js',
     filters='jsmin',
     output='public/js/common.js'
 )
