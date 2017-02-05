@@ -40,7 +40,7 @@ class User(UserMixin, SurrogatePK, Model):
     last_name = Column(db.String(30), nullable=True)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
-    profile = relationship("UserProfile", uselist=False, backref='user')
+    profile = relationship("UserProfile", uselist=False, backref='user', cascade='delete')
 
     def __init__(self, username, email, password=None, **kwargs):
         """Create instance."""
@@ -72,6 +72,6 @@ class UserProfile(SurrogatePK, Model):
     """User profile"""
     __tablename__ = 'profiles'
     user_id = Column(Integer, ForeignKey('users.id'))
-    articles = relationship('Article', backref='profile')
-    comments = relationship('Comment', backref='profile')
+    articles = relationship('Article', backref='profile', cascade="delete")
+    comments = relationship('Comment', backref='profile', cascade="delete")
 

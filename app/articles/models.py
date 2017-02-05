@@ -16,7 +16,7 @@ class Article(SurrogatePK, Model):
     body = Column(String())
     created_at = Column(DateTime, nullable=False, default=dt.datetime.utcnow)
     author = Column(Integer, ForeignKey('profiles.id'))
-    comments = relationship('Comment', backref='article_link')
+    comments = relationship('Comment', backref='article_link', cascade='delete')
 
     def __repr__(self):
         return '<Article title={}'.format(self.title)

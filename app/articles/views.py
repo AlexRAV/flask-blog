@@ -7,6 +7,7 @@ from app.user.models import User
 from app.articles.models import Comment
 from app.articles.forms import NewArticleForm, NewCommentForm
 from app.utils import flash_errors
+from app.extensions import csrf_protect
 
 blueprint = Blueprint('articles', __name__, url_prefix='/articles', static_folder='../static')
 
@@ -69,10 +70,26 @@ def add_comment(article_id):
         dict = {
             'body': comment.body,
             'author': comment.profile.user.username,
-            'created_at': comment.created_at
+            'created_at': comment.created_at,
+            'url_for_delete': url_for('articles.delete_comment', comment_id=comment.id)
         }
         return jsonify(dict)
     else:
         flash_errors(form)
     return redirect(url_for('articles.detail_article', article_id=article_id))
+
+
+@blueprint.route('/delete_comment/<comment_id>', methods=['POST'])
+@login_required
+@csrf_protect.exempt
+def delete_comment(comment_id):
+    comment = Comment.query.filter(Comment.id == comment_id).first()
+    if not comment:
+        return jsonify({'success': False}), 400
+
+    if comment.author == current_user.profile.id:
+        Comment.delete(comment)
+        return jsonify({'success': True}), 200
+
+    return jsonify({'success': False}), 403
 

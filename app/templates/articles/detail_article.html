@@ -54,6 +54,11 @@
                                 {{ comment.body }}
                             </p>
                         </div>
+                        {% if(current_user.profile.id == comment.author) %}
+                        <div class="row comment__delete-container">
+                            <a href="{{ url_for('articles.delete_comment', comment_id=comment.id) }}" class="col-lg-1 text-muted small comment__delete-btn">Delete</a>
+                        </div>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
