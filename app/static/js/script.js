@@ -16,7 +16,7 @@ $(function () {
                 csrf_token: form.csrf_token.value
             },
             'success': function (response) {
-                form.body.value='';
+                form.body.value = '';
                 var template = $($('.comment')[0].outerHTML);
                 template.find(".comment__author").text(response["author"]);
                 template.find(".comment__date-publish-text").html(moment(response["created_at"]).format("HH:mm DD.MM.YYYY"));
@@ -27,19 +27,57 @@ $(function () {
         })
     });
 
-    $('#comments').on('click.comment__delete-btn', function (e) {
+    $('#comments').on('click', '.comment__delete-btn', function (e) {
         e.preventDefault();
+        e.stopPropagation();
         var link = e.target;
-        window.testLink = link;
 
         $.ajax({
             'url': link.href,
             'method': 'POST',
             'success': function (resp) {
-                if(resp.success == true) {
+                if (resp.success == true) {
                     $(link).parents('tr.comment')[0].remove();
                 }
             }
         })
+    });
+
+    $('#comments').on('click', '.comment__edit-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var link = e.target;
+        var comment = $(link).parents('tr.comment')[0];
+        var body = $(comment).find('.comment__body')[0];
+        var bodyText = $(body).text();
+
+        $(link).text('Save');
+        link.isEdited = true;
+        body.contentEditable = true;
+        body.focus();
+        $(body).addClass('form-control');
+        $(body).on('blur', function (e) {
+            console.dir(e);
+            $(this).removeClass('form-control');
+            $(link).text('Edit');
+            this.contentEditable = false;
+            link.isEdited = false;
+
+            if ($(e.relatedTarget).hasClass('comment__edit-btn')) {
+                $.ajax({
+                    'url': link.href,
+                    'method': 'POST',
+                    'data': {body: $(body).text()},
+                    'success': function (resp) {
+                        if (resp.success == true) {
+                            console.log('Обновили');
+                        }
+                    }
+                })
+            }
+            else {
+                $(body).text(bodyText);
+            }
+        });
     })
 });

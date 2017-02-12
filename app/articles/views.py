@@ -93,3 +93,19 @@ def delete_comment(comment_id):
 
     return jsonify({'success': False}), 403
 
+
+@blueprint.route('/edit_comment/<comment_id>', methods=['POST'])
+@login_required
+@csrf_protect.exempt
+def edit_comment(comment_id):
+    comment = Comment.query.filter(Comment.id == comment_id).first()
+    if not comment:
+        return jsonify({'success': False}), 400
+
+    form = NewCommentForm(request.form, csrf_enabled=True)
+
+    if comment.author == current_user.profile.id:
+        comment.update(body=form.body.data)
+        return jsonify({'success': True}), 200
+
+    return jsonify({'success': False}), 403
